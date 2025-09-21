@@ -1,0 +1,1 @@
+# azure-fullstack-sample-with-cicd
