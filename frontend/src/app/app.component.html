@@ -1,0 +1,8 @@
+<h2>Customer List</h2>
+<ul>
+  <li *ngFor="let c of customers">{{c.name}} - {{c.email}}</li>
+</ul>
+
+<input [(ngModel)]="newName" placeholder="Name">
+<input [(ngModel)]="newEmail" placeholder="Email">
+<button (click)="addCustomer()">Add</button>

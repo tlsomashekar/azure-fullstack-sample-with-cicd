@@ -1,0 +1,50 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  backendApp: 'my-backend-app'
+  frontendApp: 'my-frontend-app'
+  resourceGroup: 'my-rg'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build_Java
+    steps:
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'backend/pom.xml'
+        goals: 'clean package'
+
+  - job: Build_Angular
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+    - script: |
+        cd frontend
+        npm install -g @angular/cli
+        npm install
+        ng build --prod
+      displayName: 'Build Angular App'
+
+- stage: Deploy
+  jobs:
+  - job: Deploy_Backend
+    steps:
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: '<your-service-connection>'
+        appName: $(backendApp)
+        package: 'backend/target/*.jar'
+
+  - job: Deploy_Frontend
+    steps:
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: '<your-service-connection>'
+        appName: $(frontendApp)
+        package: 'frontend/dist/**'
